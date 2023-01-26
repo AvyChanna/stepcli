@@ -296,7 +296,7 @@ OpenID standard defines the following values, but your provider may support some
 			},
 			cli.StringFlag{
 				Name:   "browser",
-				Usage:  "Path to browser for OAuth flow (macOS only).",
+				Usage:  "Browser command for OAuth flow. Supports shell args. URL is sent as the last param.",
 				Hidden: true,
 			},
 			flags.RedirectURL,
@@ -789,7 +789,7 @@ func (o *oauth) DoLoopbackAuthorization() (*token, error) {
 		fmt.Fprintln(os.Stderr, authURL)
 		fmt.Fprintln(os.Stderr)
 	} else {
-		fmt.Fprintln(os.Stderr, "Your default web browser has been opened to visit:")
+		fmt.Fprintln(os.Stderr, "Your web browser has been opened to visit:")
 		fmt.Fprintln(os.Stderr)
 		fmt.Fprintln(os.Stderr, authURL)
 		fmt.Fprintln(os.Stderr)

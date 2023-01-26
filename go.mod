@@ -7,6 +7,7 @@ require (
 	github.com/ThomasRooney/gexpect v0.0.0-20161231170123-5482f0350944
 	github.com/fxamacker/cbor/v2 v2.4.0
 	github.com/google/go-cmp v0.5.9
+	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/google/uuid v1.3.0
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
 	github.com/manifoldco/promptui v0.9.0

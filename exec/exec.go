@@ -12,6 +12,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/google/shlex"
 	"github.com/pkg/errors"
 	"github.com/smallstep/cli/utils/sysutils"
 )
@@ -100,23 +101,41 @@ func RunWithPid(pidFile, name string, arg ...string) {
 }
 
 // OpenInBrowser opens the given url on a web browser
+// AvyChanna: Added support for browser selection (with args support).
+//
+//	This can be classified as an RCE vuln, use at your own risk.
 func OpenInBrowser(url, browser string) error {
 	var cmd *exec.Cmd
+	browserCmd, err := shlex.Split(browser)
+	if err != nil {
+		return err
+	}
+
 	switch runtime.GOOS {
 	case "darwin":
 		if browser == "" {
 			cmd = exec.Command("open", url)
 		} else {
-			cmd = exec.Command("open", "-a", browser, url)
+			browserCmd = append([]string{"-a"}, browserCmd...)
+			browserCmd = append(browserCmd, url)
+			cmd = exec.Command("open", browserCmd...)
 		}
-	case "linux":
-		if IsWSL() {
+	case "linux", "android":
+		if browser != "" {
+			browserCmd = append(browserCmd, url)
+			cmd = exec.Command(browserCmd[0], browserCmd[1:]...)
+		} else if IsWSL() {
 			cmd = exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", url)
 		} else {
 			cmd = exec.Command("xdg-open", url)
 		}
 	case "windows":
-		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+		if browser != "" {
+			browserCmd = append(browserCmd, url)
+			cmd = exec.Command(browserCmd[0], browserCmd[1:]...)
+		} else {
+			cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+		}
 	default:
 		return errors.Errorf("unsupported platform '%s'", runtime.GOOS)
 	}
